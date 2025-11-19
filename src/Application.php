@@ -3,18 +3,18 @@
 namespace Codeages\PhalconBiz;
 
 use Codeages\Biz\Framework\Context\Biz;
-use Phalcon\DiInterface;
+use Codeages\Biz\Framework\Context\BizAwareInterface;
+use Codeages\PhalconBiz\Event\FilterResponseEvent;
+use Codeages\PhalconBiz\Event\FinishRequestEvent;
+use Codeages\PhalconBiz\Event\GetResponseEvent;
+use Codeages\PhalconBiz\Event\GetResponseForControllerResultEvent;
+use Codeages\PhalconBiz\Event\GetResponseForExceptionEvent;
+use Codeages\PhalconBiz\Event\WebEvents;
 use Phalcon\Di;
+use Phalcon\DiInterface;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Http\ResponseInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Codeages\PhalconBiz\Event\GetResponseEvent;
-use Codeages\PhalconBiz\Event\FinishRequestEvent;
-use Codeages\PhalconBiz\Event\FilterResponseEvent;
-use Codeages\PhalconBiz\Event\GetResponseForExceptionEvent;
-use Codeages\PhalconBiz\Event\GetResponseForControllerResultEvent;
-use Codeages\PhalconBiz\Event\WebEvents;
-use Codeages\Biz\Framework\Context\BizAwareInterface;
 
 class Application
 {
@@ -68,7 +68,7 @@ class Application
             }
 
             return new \Phalcon\Annotations\Adapter\Files([
-                'annotationsDir' => rtrim($biz['cache_directory'], "\/\\").DIRECTORY_SEPARATOR,
+                'annotationsDir' => rtrim($biz['cache_directory'], "\/\\") . DIRECTORY_SEPARATOR,
             ]);
         });
 
@@ -145,7 +145,7 @@ class Application
     private function handleException(\Exception $e, $request)
     {
         $event = new GetResponseForExceptionEvent($this, $request, $e);
-        $this->di['event_dispatcher']->dispatch(WebEvents::EXCEPTION, $event);
+        $this->di['event_dispatcher']->dispatch($event, WebEvents::EXCEPTION);
 
         // Listener 中可能会重设 Exception，所以这里重新获取了 Exception。
         $e = $event->getException();
@@ -168,7 +168,7 @@ class Application
     {
         $request = $this->di['request'];
         $event = new GetResponseEvent($this, $request);
-        $this->di['event_dispatcher']->dispatch(WebEvents::REQUEST, $event);
+        $this->di['event_dispatcher']->dispatch($event, WebEvents::REQUEST);
 
         if ($event->hasResponse()) {
             return $this->filterResponse($event->getResponse(), $request);
@@ -213,7 +213,7 @@ class Application
         // view
         if (!$response instanceof ResponseInterface) {
             $event = new GetResponseForControllerResultEvent($this, $request, $response);
-            $this->di['event_dispatcher']->dispatch(WebEvents::VIEW, $event);
+            $this->di['event_dispatcher']->dispatch($event, WebEvents::VIEW);
 
             if ($event->hasResponse()) {
                 $response = $event->getResponse();
@@ -235,7 +235,7 @@ class Application
      * 过滤 Response
      *
      * @param ResponseInterface $response
-     * @param RequestInterface  $request
+     * @param RequestInterface $request
      *
      * @return Response 过滤后的 Response 实例
      */
@@ -243,7 +243,7 @@ class Application
     {
         $event = new FilterResponseEvent($this, $request, $response);
 
-        $this->di['event_dispatcher']->dispatch(WebEvents::RESPONSE, $event);
+        $this->di['event_dispatcher']->dispatch($event, WebEvents::RESPONSE);
 
         $this->finishRequest($request);
 
@@ -257,6 +257,6 @@ class Application
      */
     private function finishRequest(RequestInterface $request)
     {
-        $this->di['event_dispatcher']->dispatch(WebEvents::FINISH_REQUEST, new FinishRequestEvent($this, $request));
+        $this->di['event_dispatcher']->dispatch(new FinishRequestEvent($this, $request), WebEvents::FINISH_REQUEST);
     }
 }
