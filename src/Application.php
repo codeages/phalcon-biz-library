@@ -237,7 +237,7 @@ class Application
      * @param ResponseInterface $response
      * @param RequestInterface $request
      *
-     * @return Response 过滤后的 Response 实例
+     * @return ResponseInterface 过滤后的 Response 实例
      */
     private function filterResponse(ResponseInterface $response, RequestInterface $request)
     {
