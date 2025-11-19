@@ -195,7 +195,7 @@ class Application
             $discovery->discover($namespace, $directory);
         }
 
-        $router->handle();
+        $router->handle($request->getURI());
 
         if (!$router->getMatchedRoute()) {
             throw new NotFoundException("No route found for '{$request->getMethod()} {$request->getURI()}'.");

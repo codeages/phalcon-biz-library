@@ -20,7 +20,7 @@ class AnnotationRouteDiscovery
 
     protected $debug;
 
-    protected $cacheDir;
+    protected $cacheDirectory;
 
     public function __construct(AnnotationRouter $router, AdapterInterface $adapter, $cacheDirectory, $debug = true)
     {
