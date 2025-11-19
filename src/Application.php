@@ -10,10 +10,20 @@ use Codeages\PhalconBiz\Event\GetResponseEvent;
 use Codeages\PhalconBiz\Event\GetResponseForControllerResultEvent;
 use Codeages\PhalconBiz\Event\GetResponseForExceptionEvent;
 use Codeages\PhalconBiz\Event\WebEvents;
-use Phalcon\Di;
-use Phalcon\DiInterface;
+use Exception;
+use LogicException;
+use Phalcon\Annotations\Adapter\Memory;
+
+use Phalcon\Di\Di;
+use Phalcon\Di\DiInterface;
+use Phalcon\Filter\Filter;
+use Phalcon\Http\Request;
 use Phalcon\Http\RequestInterface;
+use Phalcon\Http\Response;
 use Phalcon\Http\ResponseInterface;
+use Phalcon\Mvc\Dispatcher;
+use Phalcon\Mvc\Router\Annotations;
+use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Application
@@ -64,25 +74,25 @@ class Application
 
         $di->setShared('annotations', function () use ($biz) {
             if ($biz['debug']) {
-                return new \Phalcon\Annotations\Adapter\Memory();
+                return new Memory();
             }
 
-            return new \Phalcon\Annotations\Adapter\Files([
+            return new Files([
                 'annotationsDir' => rtrim($biz['cache_directory'], "\/\\") . DIRECTORY_SEPARATOR,
             ]);
         });
 
         $di->setShared('mvc_dispatcher', function () {
-            return new \Phalcon\Mvc\Dispatcher();
+            return new Dispatcher();
         });
 
         $di->setShared('filter', function () {
-            return new \Phalcon\Filter();
+            return new Filter();
         });
 
         $di->setShared('router', function () {
             // Use the annotations router. We're passing false as we don't want the router to add its default patterns
-            $router = new \Phalcon\Mvc\Router\Annotations(false);
+            $router = new Annotations(false);
             $router->setControllerSuffix('');
             $router->setActionSuffix('');
 
@@ -90,11 +100,11 @@ class Application
         });
 
         $di->setShared('request', function () {
-            return new \Phalcon\Http\Request();
+            return new Request();
         });
 
         $di->set('response', function () {
-            return new \Phalcon\Http\Response();
+            return new Response();
         });
 
         $subscribers = $config['subscribers'] ?? [];
@@ -135,14 +145,14 @@ class Application
 
         try {
             $response = $this->doHandle();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = $this->handleException($e, $request);
         }
 
         $response->send();
     }
 
-    private function handleException(\Exception $e, $request)
+    private function handleException(Exception $e, $request)
     {
         $event = new GetResponseForExceptionEvent($this, $request, $e);
         $this->di['event_dispatcher']->dispatch($event, WebEvents::EXCEPTION);
@@ -159,7 +169,7 @@ class Application
 
         try {
             return $this->filterResponse($response, $request);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $response;
         }
     }
@@ -178,7 +188,7 @@ class Application
 
         $discovery = new AnnotationRouteDiscovery($router, $this->di['annotations'], $this->biz['cache_directory'], $this->debug);
         if (empty($this->config['route_discovery']) || !is_array($this->config['route_discovery'])) {
-            throw new \RuntimeException('`route_discovery`未配置或配置不正确。');
+            throw new RuntimeException('`route_discovery`未配置或配置不正确。');
         }
 
         foreach ($this->config['route_discovery'] as $namespace => $directory) {
@@ -224,7 +234,7 @@ class Application
                 if (null === $response) {
                     $msg .= ' Did you forget to add a return statement somewhere in your controller?';
                 }
-                throw new \LogicException($msg);
+                throw new LogicException($msg);
             }
         }
 

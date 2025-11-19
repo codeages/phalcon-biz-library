@@ -2,7 +2,7 @@
 
 namespace Codeages\PhalconBiz\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class WebEvent extends Event
 {

@@ -2,9 +2,9 @@
 
 namespace Codeages\PhalconBiz;
 
+use Phalcon\Annotations\Adapter\AdapterInterface;
 use Symfony\Component\Finder\Finder;
 use Phalcon\Mvc\Router\Annotations as AnnotationRouter;
-use Phalcon\Annotations\AdapterInterface;
 
 class AnnotationRouteDiscovery
 {
