@@ -1,25 +1,26 @@
 {
-    "name": "codeages/phalcon-biz-library",
-    "description": "Phalcon 与 BizFramework 整合的类库，比较适用与 API 项目。",
-    "license": "MIT",
-    "type": "library",
-    "autoload": {
-        "psr-4": {
-            "Codeages\\PhalconBiz\\": "src/"
-        }
-    },
-    "require": {
-        "php": ">=7.4",
-        "ext-phalcon": "*",
-        "codeages/biz-framework": "^0.12.8",
-        "symfony/event-dispatcher": "^5.4",
-        "symfony/event-dispatcher-contracts": "^2|^3",
-        "symfony/finder": "^5.4"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^8",
-        "phalcon/ide-stubs": "^5.9.3",
-        "guzzlehttp/guzzle": "^6.3",
-        "shipmonk/composer-dependency-analyser": "^1.8"
+  "name": "codeages/phalcon-biz-library",
+  "description": "Phalcon 与 BizFramework 整合的类库，比较适用与 API 项目。",
+  "license": "MIT",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "Codeages\\PhalconBiz\\": "src/"
     }
+  },
+  "require": {
+    "php": ">=7.4",
+    "ext-phalcon": "*",
+    "codeages/biz-framework": "^0.12.8",
+    "symfony/event-dispatcher": "^5.4",
+    "symfony/event-dispatcher-contracts": "^2|^3",
+    "symfony/finder": "^5.4",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^8",
+    "phalcon/ide-stubs": "^5.9.3",
+    "guzzlehttp/guzzle": "^6.3",
+    "shipmonk/composer-dependency-analyser": "^1.8"
+  }
 }

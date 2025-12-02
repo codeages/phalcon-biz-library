@@ -73,13 +73,7 @@ class Application
         $biz = $this->biz;
 
         $di->setShared('annotations', function () use ($biz) {
-            if ($biz['debug']) {
-                return new Memory();
-            }
-
-            return new Files([
-                'annotationsDir' => rtrim($biz['cache_directory'], "\/\\") . DIRECTORY_SEPARATOR,
-            ]);
+            return new Memory();
         });
 
         $di->setShared('mvc_dispatcher', function () {

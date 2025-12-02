@@ -17,7 +17,7 @@ class ResponseSubscriber implements EventSubscriberInterface
         $response = $event->getDI()->get('response');
         $response->setStatusCode(200);
 
-        $callback = $event->getRequest()->getQuery('callback', 'string');
+        $callback = $event->getRequest()->getQuery('callback', '');
         // jsonp
         if ($callback) {
             $response->setContentType('text/html', 'UTF-8');
